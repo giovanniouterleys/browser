@@ -23,7 +23,7 @@ function initEventsHandler(mainWin, browserView) {
     ipcMain.handle('go-forward', () => {
         browserContent.goForward();
     });
-    
+
     ipcMain.handle('refresh', () => {
         browserContent.reload();
     });
@@ -40,6 +40,20 @@ function initEventsHandler(mainWin, browserView) {
     ipcMain.handle('current-url', () => {
         return browserContent.getURL();
     });
+
+    // get all the source code of the page
+    // Dans votre fichier principal d'Electron (par exemple, main.js)
+
+    ipcMain.handle('get-page-source', async () => {
+        return browserContent.executeJavaScript(`
+            Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, button, span, div'))
+                .filter(element => element.textContent.trim().length > 0)
+                .map(element => element.textContent.trim().replace(/\\s+/g, ' '))
+                .join(' ');
+        `, true);
+    });
+    
+
 }
 
 module.exports = { initEventsHandler };
